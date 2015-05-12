@@ -1,6 +1,6 @@
 #pragma once
 
-#include <deque>
+#include <vector>
 #include <QMutex>
 #include <QString>
 #include <QFileSystemWatcher>
@@ -28,11 +28,10 @@ private slots:
     void update();
 
 private:
-    void addLine(const QString &line);
     void scheduleUpdate();
 
 private:
-    std::deque<QString> mLines;
+    std::vector<QString> mLines;
     mutable QMutex mMutex;
     QFileSystemWatcher mFileWatcher;
     qint64 mFilePosition;

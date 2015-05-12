@@ -77,15 +77,6 @@ QString GYLogModel::textAt(int line) const
     return mLines[line];
 }
 
-void GYLogModel::addLine(const QString &line)
-{
-    QMutexLocker lock(&mMutex);
-    mLines.push_back(line);
-    if (mLines.size() > MAX_LINES) {
-        mLines.pop_front();
-    }
-}
-
 void GYLogModel::scheduleUpdate()
 {
     if (mUpdateTimer.isActive())
