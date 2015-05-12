@@ -19,6 +19,7 @@ protected:
     void resizeEvent(QResizeEvent *) override;
     void scrollContentsBy(int dx, int dy) override;
     void setupViewport(QWidget *viewport) override;
+    void keyPressEvent(QKeyEvent *e) override;
 
 private slots:
     void onUpdated();

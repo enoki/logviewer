@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QScrollBar>
 #include <QDebug>
+#include <QKeyEvent>
 #include <QTimer>
 
 GYLogView::GYLogView(GYLogModel *model, QWidget *parent)
@@ -47,6 +48,8 @@ void GYLogView::paintEvent(QPaintEvent *)
     for (int line = firstLine; line < lastLine; ++line) {
         QString text = mModel->textAt(line);
 
+        text = text.mid(horizontalScrollBar()->value());
+
         painter.drawText(mLineHeight+10, y + mLineBaseline, text);
 
         y += mLineHeight;
@@ -75,6 +78,55 @@ void GYLogView::setupViewport(QWidget *viewport)
     QAbstractScrollArea::setupViewport(viewport);
 }
 
+void GYLogView::keyPressEvent(QKeyEvent *e)
+{
+    switch (e->key())
+    {
+        case Qt::Key_G:
+        {
+            if (e->modifiers() & Qt::ShiftModifier)
+            {
+                verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+            }
+            else
+            {
+                verticalScrollBar()->setValue(verticalScrollBar()->minimum());
+            }
+            break;
+        }
+        case Qt::Key_J:
+        {
+            verticalScrollBar()->setValue(verticalScrollBar()->value()+1);
+            break;
+        }
+        case Qt::Key_K:
+        {
+            verticalScrollBar()->setValue(verticalScrollBar()->value()-1);
+            break;
+        }
+        case Qt::Key_H:
+        {
+            horizontalScrollBar()->setValue(horizontalScrollBar()->value()-1);
+            break;
+        }
+        case Qt::Key_L:
+        {
+            horizontalScrollBar()->setValue(horizontalScrollBar()->value()+1);
+            break;
+        }
+        case Qt::Key_Space:
+        {
+            verticalScrollBar()->setValue(verticalScrollBar()->value()+mLinesPerScreen);
+            break;
+        }
+        default:
+        {
+            QAbstractScrollArea::keyPressEvent(e);
+            break;
+        }
+    }
+}
+
 void GYLogView::onUpdated()
 {
     emit internalScheduleUpdate();
@@ -91,6 +143,10 @@ void GYLogView::doUpdate()
     }
     verticalScrollBar()->setRange(0, rangeMax);
     verticalScrollBar()->setValue(rangeMax);
+
+    horizontalScrollBar()->setRange(0, 128);
+    horizontalScrollBar()->setValue(0);
+
     update();
     qDebug() << "onUpdate: " << lineCount << "," << mLinesPerScreen << "," << rangeMax;
 }
